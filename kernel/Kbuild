@@ -31,7 +31,7 @@ kernelsu-objs += selinux/selinux.o
 kernelsu-objs += selinux/sepolicy.o
 kernelsu-objs += selinux/rules.o
 
-ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes
+ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes 
 ccflags-y += $(call cc-disable-warning, int-conversion)
 ccflags-y += -Wno-declaration-after-statement -Wno-unused-function -Wno-unused-variable -Wno-missing-braces
 ccflags-y += -Wno-int-to-pointer-cast -Wno-declaration-after-statement
@@ -43,8 +43,7 @@ obj-$(CONFIG_KSU) += kernelsu.o
 
 obj-$(CONFIG_KPM) += kpm/
 
-# ===================== 已修改为 ikunSU =====================
-REPO_NAME := ikunSU
+REPO_NAME := ReSukiSU
 
 KDIR := $(KDIR)
 
@@ -63,9 +62,8 @@ $(error You should use $(REPO_NAME) as an git submodule instead of directly copy
 endif
 
 $(shell cd $(KSU_SRC); [ -f ../.git/shallow ] && $(GIT_BIN) fetch --unshallow)
-
-# ===================== 已固定版本号为 18000 =====================
-KSU_VERSION := 18000
+KSU_LOCAL_VERSION := $(shell cd $(KSU_SRC); $(GIT_BIN) rev-list --count HEAD)
+KSU_VERSION := $(shell expr 10000 + $(KSU_LOCAL_VERSION) + 8000)
 
 KSU_TAG_NAME    := $(shell cd $(KSU_SRC); $(GIT_BIN) describe --abbrev=0 --tags 2>/dev/null || echo "unknown")
 KSU_COMMIT_SHA  := $(shell cd $(KSU_SRC); $(GIT_BIN) rev-parse --short=8 HEAD 2>/dev/null || echo "unknown")
@@ -363,7 +361,7 @@ ifeq ($(CONFIG_KSU_MANUAL_HOOK), y)
     $(info -- You lost ksu_handle_newfstat_ret hook in your kernel)
     $(info -- Read: https://resukisu.github.io/guide/manual-integrate.html)
     $(error You should integrate $(REPO_NAME) in your kernel.)
-  endif
+  endif 
 
   ifeq ($(shell grep -q "ksu_handle_fstat64_ret" $(srctree)/fs/stat.c; echo $$?),0)
     $(info -- $(REPO_NAME)/manual_hook: ksu_handle_fstat64_ret found)
