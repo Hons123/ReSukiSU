@@ -6,6 +6,11 @@
 #define EXPECTED_HASH_WEISHU                                                   \
     "c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6"
 
+// Hons/ikunSU
+#define EXPECTED_SIZE_HONS 0x316
+#define EXPECTED_HASH_HONS                                                    \
+	"983f5d3fd2f27cabd963b59deefdadfafa051017a6f0fb1573cb0f2d14b80842"
+
 // 5ec1cff/KernelSU
 #define EXPECTED_SIZE_5EC1CFF 384
 #define EXPECTED_HASH_5EC1CFF                                                  \
