@@ -43,53 +43,55 @@ obj-$(CONFIG_KSU) += kernelsu.o
 
 obj-$(CONFIG_KPM) += kpm/
 
-REPO_NAME := ReSukiSU
+REPO_NAME := ikunSU
+REPO_OWNER := ikunSU
+REPO_BRANCH := main
+KSU_VERSION_API := 4.1.1
 
 KDIR := $(KDIR)
+MDIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 GIT_BIN := /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin git
 CURL_BIN := /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin curl
 
-KSU_SRC := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+ifeq ($(findstring $(srctree),$(src)),$(srctree))
+  KSU_SRC := $(src)
+else
+  KSU_SRC := $(srctree)/$(src)
+endif
+
+ifneq ($(shell test -e $(KSU_SRC)/../.git && echo "in-tree"),in-tree)
+  KSU_SRC := $(MDIR)
+endif
 
 LOCAL_GIT_EXISTS := $(shell test -e $(KSU_SRC)/../.git && echo 1 || echo 0)
 
-ifeq ($(LOCAL_GIT_EXISTS),0)
-$(info -- Can't found $(REPO_NAME) git submodule!)
-$(info -- If you are using bazel to build this kernel,)
-$(info -- Please goto Kbuild and change KSU_SRC to the absolute path of ksu kernel folder path)
-$(error You should use $(REPO_NAME) as an git submodule instead of directly copy code)
+define get_ksu_version_full
+v$1-$(shell cd $(KSU_SRC); $(GIT_BIN) rev-parse --short=8 HEAD)@$(shell cd $(KSU_SRC); $(GIT_BIN) rev-parse --abbrev-ref HEAD)
+endef
+
+# ===================== 40000+ 版本计算逻辑（和你给的示例完全一致） =====================
+ifeq ($(LOCAL_GIT_EXISTS),1)
+    $(shell cd $(KSU_SRC); [ -f ../.git/shallow ] && $(GIT_BIN) fetch --unshallow)
+    KSU_LOCAL_VERSION := $(shell cd $(KSU_SRC); $(GIT_BIN) rev-list --count HEAD)
+    KSU_VERSION := $(shell expr 40000 + $(KSU_LOCAL_VERSION) - 2815)
+    $(info -- $(REPO_NAME) version (local .git): $(KSU_VERSION))
+else
+    KSU_VERSION := 13000
+    $(warning -- Could not fetch version via local .git! Using fallback: $(KSU_VERSION))
 endif
 
 $(shell cd $(KSU_SRC); [ -f ../.git/shallow ] && $(GIT_BIN) fetch --unshallow)
-KSU_LOCAL_VERSION := $(shell cd $(KSU_SRC); $(GIT_BIN) rev-list --count HEAD)
-KSU_VERSION := $(shell expr 10000 + $(KSU_LOCAL_VERSION) + 8000)
+KSU_VERSION_FULL := $(call get_ksu_version_full,$(KSU_VERSION_API))
 
-KSU_TAG_NAME    := $(shell cd $(KSU_SRC); $(GIT_BIN) describe --abbrev=0 --tags 2>/dev/null || echo "unknown")
-KSU_COMMIT_SHA  := $(shell cd $(KSU_SRC); $(GIT_BIN) rev-parse --short=8 HEAD 2>/dev/null || echo "unknown")
-KSU_BRANCH_NAME := $(shell cd $(KSU_SRC); $(GIT_BIN) branch --show-current 2>/dev/null || echo "unknown")
-
-# make ddk happy
-ifneq ($(KDIR),)
-CONFIG_KSU_FULL_NAME_FORMAT := "%TAG_NAME%-%COMMIT_SHA%@%REPO_NAME%"
-endif
-
-# call subst to process placeholder
-KSU_VERSION_FULL := $(subst ",,$(CONFIG_KSU_FULL_NAME_FORMAT))
-KSU_VERSION_FULL := $(subst %TAG_NAME%,$(KSU_TAG_NAME),$(KSU_VERSION_FULL))
-KSU_VERSION_FULL := $(subst %COMMIT_SHA%,$(KSU_COMMIT_SHA),$(KSU_VERSION_FULL))
-KSU_VERSION_FULL := $(subst %REPO_NAME%,$(REPO_NAME),$(KSU_VERSION_FULL))
-KSU_VERSION_FULL := $(subst %BRANCH_NAME%,$(KSU_BRANCH_NAME),$(KSU_VERSION_FULL))
-KSU_VERSION_FULL := $(subst %KSU_VERSION%,$(KSU_VERSION),$(KSU_VERSION_FULL))
-
-$(info -- $(REPO_NAME) version code: $(KSU_VERSION))
-$(info -- $(REPO_NAME) version name: $(KSU_VERSION_FULL))
+$(info -- $(REPO_NAME) version full: $(KSU_VERSION_FULL))
+# ===================== 版本计算结束 =====================
 
 ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
 ccflags-y += -DKSU_VERSION_FULL=\"$(KSU_VERSION_FULL)\"
 
 ifeq ($(CONFIG_KSU_MULTI_MANAGER_SUPPORT), y)
-$(info -- Supported Unofficial Manager: MKSU, RKSU, SukiSU-Ultra, ReSukiSU )
+$(info -- Supported Unofficial Manager: MKSU, RKSU, SukiSU-Ultra, ReSukiSU, ikunSU )
 endif
 
 ifeq ($(CONFIG_KSU_MANUAL_HOOK), y)
@@ -104,9 +106,7 @@ endif
 
 KERNEL_VERSION := $(VERSION).$(PATCHLEVEL)
 KERNEL_TYPE := Non-GKI
-# Check for GKI 2.0 (5.10+ or 6.x+)
 ifneq ($(shell test \( $(VERSION) -ge 5 -a $(PATCHLEVEL) -ge 10 \) -o $(VERSION) -ge 6; echo $$?),0)
-# Check for GKI 1.0 (5.4)
 ifeq ($(shell test $(VERSION)-$(PATCHLEVEL) = 5-4; echo $$?),0)
 KERNEL_TYPE := GKI 1.0
 endif
@@ -116,7 +116,6 @@ endif
 $(info -- KERNEL_VERSION: $(KERNEL_VERSION))
 $(info -- KERNEL_TYPE: $(KERNEL_TYPE))
 
-# Check if KPM is enabled
 ifeq ($(CONFIG_KPM), y)
 $(info -- KPM is enabled)
 $(info -- WARNING, This feature is unstable!!! You are WARNED!!!)
@@ -169,7 +168,6 @@ ifeq ($(shell grep -q "inode_security_struct\s\+\*selinux_inode" $(srctree)/secu
 $(info -- $(REPO_NAME)/compat: selinux_inode found)
 ccflags-y += -DKSU_OPTIONAL_SELINUX_INODE
 endif
-
 ifeq ($(shell grep -q "task_security_struct\s\+\*selinux_cred" $(srctree)/security/selinux/include/objsec.h; echo $$?),0)
 $(info -- $(REPO_NAME)/compat: selinux_cred found)
 ccflags-y += -DKSU_OPTIONAL_SELINUX_CRED
@@ -225,7 +223,6 @@ ccflags-y += -DKSU_COMPAT_HAS_PROC_OPS
 endif
 
 # Bitmap zalloc
-# https://github.com/torvalds/linux/commit/c42b65e363ce97a828f81b59033c3558f8fa7f70
 ifeq ($(shell grep -q "bitmap_zalloc" $(srctree)/include/linux/bitmap.h; echo $$?),0)
 $(info -- $(REPO_NAME)/compat: bitmap_zalloc found)
 ccflags-y += -DKSU_COMPAT_HAS_BITMAP_ALLOC_HELPER
@@ -390,5 +387,3 @@ ifneq ($(KERNEL_TYPE), GKI 2.0)
         $(error TP hooks are incompatible with Non-GKI/GKI 1.0 kernels in this configuration.)
     endif
 endif
-
-# Keep a new line here!! Because someone may append config
