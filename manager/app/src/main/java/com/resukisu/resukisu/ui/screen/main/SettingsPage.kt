@@ -86,7 +86,6 @@ import com.maxkeppeler.sheets.list.models.ListOption
 import com.resukisu.resukisu.BuildConfig
 import com.resukisu.resukisu.Natives
 import com.resukisu.resukisu.R
-import com.resukisu.resukisu.ui.component.AboutDialog
 import com.resukisu.resukisu.ui.component.ConfirmResult
 import com.resukisu.resukisu.ui.component.DialogHandle
 import com.resukisu.resukisu.ui.component.ksuIsValid
@@ -148,9 +147,6 @@ fun SettingsPage(bottomPadding: Dp, hazeState: HazeState?) {
         contentColor = MaterialTheme.colorScheme.onSurface,
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
-        val aboutDialog = rememberCustomDialog {
-            AboutDialog(it)
-        }
         val loadingDialog = rememberLoadingDialog()
         var showBottomsheet by remember { mutableStateOf(false) }
         val logSaved = stringResource(R.string.log_saved)
@@ -533,13 +529,13 @@ fun SettingsPage(bottomPadding: Dp, hazeState: HazeState?) {
                     title = stringResource(R.string.about),
                     content = {
                         item {
-                            SettingsBaseWidget(
+                            SettingsJumpPageWidget(
                                 icon = Icons.Filled.Info,
                                 title = stringResource(R.string.about),
                                 onClick = {
-                                    aboutDialog.show()
+                                    navigator.push(Route.About)
                                 }
-                            ) {}
+                            )
                         }
                     }
                 )

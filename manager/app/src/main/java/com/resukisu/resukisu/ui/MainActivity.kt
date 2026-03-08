@@ -94,6 +94,7 @@ import com.resukisu.resukisu.ui.navigation.HandleDeepLink
 import com.resukisu.resukisu.ui.navigation.LocalNavigator
 import com.resukisu.resukisu.ui.navigation.Route
 import com.resukisu.resukisu.ui.navigation.rememberNavigator
+import com.resukisu.resukisu.ui.screen.AboutScreen
 import com.resukisu.resukisu.ui.screen.AppProfileScreen
 import com.resukisu.resukisu.ui.screen.AppProfileTemplateScreen
 import com.resukisu.resukisu.ui.screen.BottomBarDestination
@@ -104,6 +105,7 @@ import com.resukisu.resukisu.ui.screen.InstallScreen
 import com.resukisu.resukisu.ui.screen.LogViewerScreen
 import com.resukisu.resukisu.ui.screen.TemplateEditorScreen
 import com.resukisu.resukisu.ui.screen.UmountManagerScreen
+import com.resukisu.resukisu.ui.screen.about.OpenSourceLicenseScreen
 import com.resukisu.resukisu.ui.screen.moduleRepo.ModuleRepoScreen
 import com.resukisu.resukisu.ui.screen.moduleRepo.OnlineModuleDetailScreen
 import com.resukisu.resukisu.ui.susfs.SuSFSConfigScreen
@@ -471,6 +473,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                 ),
                                 entryProvider = entryProvider {
+                                    entry<Route.About> { AboutScreen() }
+                                    entry<Route.OpenSourceLicense> { OpenSourceLicenseScreen() }
                                     entry<Route.Main> { MainScreen() }
                                     entry<Route.AppProfileTemplate> { AppProfileTemplateScreen() }
                                     entry<Route.TemplateEditor> { key ->
