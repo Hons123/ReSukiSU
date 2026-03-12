@@ -421,7 +421,7 @@ append_ksu_rc:
 static bool is_init_rc(struct file *fp)
 {
     if (strcmp(current->comm, "init")) {
-        // we are only interest in `init` process
+        // we are only interested in the `init` process.
         return false;
     }
 
@@ -431,7 +431,7 @@ static bool is_init_rc(struct file *fp)
 
     const char *short_name = fp->f_path.dentry->d_name.name;
     if (strcmp(short_name, "init.rc")) {
-        // we are only interest `init.rc` file name file
+        // we are only interested in the `init.rc` file name.
         return false;
     }
     char path[256];

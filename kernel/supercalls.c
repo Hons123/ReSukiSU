@@ -68,7 +68,7 @@ bool allowed_for_su(void)
 
 static int do_grant_root(void __user *arg)
 {
-    // we already check uid above on allowed_for_su()
+    // we already checked the uid above in allowed_for_su().
 
     pr_info("allow root for: %d\n", current_uid().val);
     escape_with_root_profile();
@@ -324,10 +324,10 @@ static int do_uid_should_umount(void __user *arg)
     return 0;
 }
 
-// this api mostly use case is tell zygisk impl who is the root manager
-// we return last use manager's uid to make them can inject ZYGISK_ENABLED=1
-// if user are not open any manager yet, we return the first registered manager
-// if no manager registered, return -1 (KSU_INVALID_APPID)
+// this api is mainly used to tell the zygisk implementation which app is the root manager.
+// we return the last used manager's uid so it can inject ZYGISK_ENABLED=1.
+// if the user has not opened any manager yet, we return the first registered manager.
+// if no manager is registered, return -1 (KSU_INVALID_APPID).
 static int do_get_manager_appid(void __user *arg)
 {
     struct ksu_get_manager_appid_cmd cmd;
@@ -637,8 +637,8 @@ static int ksu_umount_list_getlist(struct ksu_manage_try_umount_cmd *cmd,
         user_buf += len;
 
         if (!legacy) {
-            // not legacy, we put flags too
-            // userspace can simple use an struct to recv data, because it memory layout are 100% consistent
+            // non-legacy mode, includes flags too.
+            // userspace can use a struct to receive data because the memory layout is fully consistent.
             if (copy_to_user(user_buf, &entry->flags, sizeof(entry->flags))) {
                 up_read(&mount_list_lock);
                 return -EFAULT;
@@ -755,9 +755,9 @@ static int manage_try_umount(void __user *arg)
     }
 
     // WARNING! this is straight up pointerwalking.
-    // this way we dont need to redefine the ioctl defs.
+    // this way we don't need to redefine the ioctl defs.
     // this also avoids us needing to kmalloc
-    // userspace have to send pointer to memory or pointer to a VLA.
+    // userspace has to send pointer to memory or pointer to a VLA.
     // userspace also has to process the flat blob itself and zero init properly.
     case KSU_UMOUNT_GETLIST_LEGACY: {
         return ksu_umount_list_getlist(&cmd, true);

@@ -24,7 +24,7 @@
 #include "selinux/selinux.h"
 
 // workaround for A12-5.10 kernel
-// Some third-party kernel (e.g. linegaeOS) uses wrong toolchain, which supports
+// Some third-party kernel (e.g. LineageOS) uses wrong toolchain, which supports
 // CC_HAVE_STACKPROTECTOR_SYSREG while gki's toolchain doesn't.
 // Therefore, ksu lkm, which uses gki toolchain, requires this __stack_chk_guard,
 // while those third-party kernel can't provide.
