@@ -228,6 +228,24 @@ fun HomePage(
                         }
                     )
 
+                    if (viewModel.systemStatus.requireNewKernel) {
+                        WarningCard(
+                            message = stringResource(
+                                id = R.string.incompatible_kernel_msg,
+                                Natives.version,
+                                Natives.MINIMAL_SUPPORTED_KERNEL
+                            ),
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.TwoTone.Error,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        )
+                    }
+
                     // 警告信息
                     if (BuildConfig.DEBUG) {
                         WarningCard(
@@ -242,28 +260,19 @@ fun HomePage(
                             }
                         )
                     }
-                    if (viewModel.systemStatus.requireNewKernel) {
-                        WarningCard(
-                            message = stringResource(id = R.string.require_kernel_version).format(
-                                Natives.getSimpleVersionFull(),
-                                Natives.MINIMAL_SUPPORTED_KERNEL_FULL
-                            )
-                        )
-                    }
 
                     if (viewModel.systemStatus.ksuVersion != null && !viewModel.systemStatus.isRootAvailable) {
                         WarningCard(
-                            message = stringResource(id = R.string.grant_root_failed)
+                            message = stringResource(id = R.string.grant_root_failed),
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.TwoTone.Error,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         )
-                    }
-
-                    // 只有在没有其他警告信息时才显示不兼容内核警告
-                    val shouldShowWarnings = viewModel.systemStatus.requireNewKernel ||
-                            (viewModel.systemStatus.ksuVersion != null && !viewModel.systemStatus.isRootAvailable)
-
-                    if (Natives.version <= Natives.MINIMAL_NEW_IOCTL_KERNEL && !shouldShowWarnings && viewModel.systemStatus.ksuVersion != null) {
-                        IncompatibleKernelCard()
-                        Spacer(Modifier.height(12.dp))
                     }
                 }
 
@@ -574,7 +583,9 @@ private fun StatusCard(
                             ),
                     )
 
-                    Column(Modifier.padding(start = 20.dp).weight(1f)) {
+                    Column(Modifier
+                        .padding(start = 20.dp)
+                        .weight(1f)) {
                         Text(
                             text = stringResource(R.string.home_not_installed),
                             style = MaterialTheme.typography.titleMedium,
@@ -961,20 +972,4 @@ private fun StatusCardPreview() {
             )
         )
     }
-}
-
-@Composable
-private fun IncompatibleKernelCard() {
-    val currentKver = remember { Natives.version }
-    val threshold   = Natives.MINIMAL_NEW_IOCTL_KERNEL
-
-    val msg = stringResource(
-        id = R.string.incompatible_kernel_msg,
-        currentKver,
-        threshold
-    )
-
-    WarningCard(
-        message = msg
-    )
 }

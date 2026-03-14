@@ -76,7 +76,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import com.resukisu.resukisu.Natives
 import com.resukisu.resukisu.R
 import com.resukisu.resukisu.ui.MainActivity
 import com.resukisu.resukisu.ui.component.ConfirmResult
@@ -481,16 +480,14 @@ private fun SplicedGroupScope.hideOptionsSettings(
     }
 
     // KPM 状态信息隐藏
-    if (Natives.version >= Natives.MINIMAL_SUPPORTED_KPM) {
-        item {
-            SettingsSwitchWidget(
-                icon = Icons.Filled.VisibilityOff,
-                title = stringResource(R.string.show_kpm_info),
-                description = stringResource(R.string.show_kpm_info_summary),
-                checked = state.isShowKpmInfo,
-                onCheckedChange = handlers::handleShowKpmInfoChange
-            )
-        }
+    item {
+        SettingsSwitchWidget(
+            icon = Icons.Filled.VisibilityOff,
+            title = stringResource(R.string.show_kpm_info),
+            description = stringResource(R.string.show_kpm_info_summary),
+            checked = state.isShowKpmInfo,
+            onCheckedChange = handlers::handleShowKpmInfoChange
+        )
     }
 
     item {
@@ -538,21 +535,19 @@ private fun AdvancedSettings(
 
         item {
             // 动态管理器设置
-            if (Natives.version >= Natives.MINIMAL_SUPPORTED_DYNAMIC_MANAGER && Natives.version >= Natives.MINIMAL_NEW_IOCTL_KERNEL) {
-                SettingsJumpPageWidget(
-                    icon = Icons.Filled.Security,
-                    title = stringResource(R.string.dynamic_manager_title),
-                    description = if (state.isDynamicSignEnabled) {
-                        stringResource(
-                            R.string.dynamic_manager_enabled_summary,
-                            state.dynamicSignSize
-                        )
-                    } else {
-                        stringResource(R.string.dynamic_manager_disabled)
-                    },
-                    onClick = { state.showDynamicSignDialog = true }
-                )
-            }
+            SettingsJumpPageWidget(
+                icon = Icons.Filled.Security,
+                title = stringResource(R.string.dynamic_manager_title),
+                description = if (state.isDynamicSignEnabled) {
+                    stringResource(
+                        R.string.dynamic_manager_enabled_summary,
+                        state.dynamicSignSize
+                    )
+                } else {
+                    stringResource(R.string.dynamic_manager_disabled)
+                },
+                onClick = { state.showDynamicSignDialog = true }
+            )
         }
     }
 }

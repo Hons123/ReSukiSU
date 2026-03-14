@@ -15,7 +15,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import com.resukisu.resukisu.Natives
 import com.resukisu.resukisu.R
 import com.resukisu.resukisu.ui.MainActivity
 import com.resukisu.resukisu.ui.component.ksuIsValid
@@ -82,7 +81,7 @@ enum class BottomBarDestination(
                 return BottomBarDestination.entries.filter {
                     when (it) {
                         Kpm -> {
-                            kpmVersion?.isNotEmpty() ?: false && !showKpmInfo && Natives.version >= Natives.MINIMAL_SUPPORTED_KPM
+                            kpmVersion?.isNotEmpty() ?: false && !showKpmInfo
                         }
 
                         else -> true
