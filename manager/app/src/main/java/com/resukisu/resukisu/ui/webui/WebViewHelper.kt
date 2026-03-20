@@ -37,6 +37,8 @@ internal suspend fun prepareWebView(
     moduleViewModel: ModuleViewModel,
 ) {
     withContext(Dispatchers.IO) {
+        moduleViewModel.fetchModuleList()
+
         val moduleInfo = moduleViewModel.moduleList.find { info -> info.id == moduleId }
 
         if (moduleInfo == null) {
