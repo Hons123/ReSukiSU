@@ -132,6 +132,10 @@ struct ksu_nuke_ext4_sysfs_cmd {
     __aligned_u64 arg; /* Input: mnt pointer */
 };
 
+struct ksu_get_sulog_fd_cmd {
+    __u32 flags; /* Input: reserved for future use, must be 0 */
+};
+
 struct ksu_manage_try_umount_cmd {
     __aligned_u64 arg; /* char ptr, this is the mountpoint */
     __u32 flags; /* this is the flag we use for it */
@@ -198,6 +202,15 @@ struct ksu_kpm_cmd {
     __aligned_u64 __user result_code;
 } __attribute__((packed));
 
+DEFINE_KSU_UAPI_CONST(__u8, KERNEL_PATCH_NOT_FOUND, 0)
+DEFINE_KSU_UAPI_CONST(__u8, KERNEL_PATCH_ORIGINAL, 1)
+DEFINE_KSU_UAPI_CONST(__u8, KERNEL_PATCH_KPN, 2)
+DEFINE_KSU_UAPI_CONST(__u8, KERNEL_PATCH_SUKISU, 3)
+
+struct ksu_get_kernel_patch_implement {
+    __u8 type; // Output: Current Kernel Patch Implement
+};
+
 /* IOCTL command definitions */
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GRANT_ROOT, _IOC(_IOC_NONE, 'K', 1, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_INFO, _IOC(_IOC_READ, 'K', 2, 0))
@@ -222,6 +235,7 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_MANAGE_MARK, _IOC(_IOC_READ | _IOC_WRITE,
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_NUKE_EXT4_SYSFS, _IOC(_IOC_WRITE, 'K', 17, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_MANAGE_TRY_UMOUNT, _IOC(_IOC_WRITE, 'K', 18, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_INIT_PGRP, _IO('K', 19))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_SULOG_FD, _IOW('K', 20, struct ksu_get_sulog_fd_cmd))
 
 // Downstream add IOCTL command definitions
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_FULL_VERSION, _IOC(_IOC_READ, 'K', 100, 0))
@@ -230,6 +244,7 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_ENABLE_KPM, _IOC(_IOC_READ, 'K', 102, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_DYNAMIC_MANAGER, _IOC(_IOC_READ | _IOC_WRITE, 'K', 103, 0))
 // 104 = old get_managers, deprecated
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_MANAGERS, _IOC(_IOC_READ | _IOC_WRITE, 'K', 105, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, _IOC(_IOC_READ, 'K', 106, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_KPM, _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0))
 
 #undef DEFINE_KSU_UAPI_CONST

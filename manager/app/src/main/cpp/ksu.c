@@ -213,10 +213,6 @@ bool is_kernel_umount_enabled() {
     return value != 0;
 }
 
-bool set_sulog_enabled(bool enabled) {
-    return set_feature(KSU_FEATURE_SULOG, enabled ? 1 : 0);
-}
-
 bool is_sulog_enabled() {
     uint64_t value = 0;
     bool supported = false;
@@ -227,6 +223,10 @@ bool is_sulog_enabled() {
         return false;
     }
     return value != 0;
+}
+
+bool set_sulog_enabled(bool enabled) {
+    return set_feature(KSU_FEATURE_SULOG, enabled ? 1 : 0);
 }
 
 void get_full_version(char* buff) {
@@ -255,6 +255,13 @@ void get_hook_type(char *buff) {
     } else {
         legacy_get_hook_type(buff, 32);
     }
+}
+
+int get_kernel_patch_implement() {
+    struct ksu_get_kernel_patch_implement cmd = {0};
+    if (ksuctl(KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, &cmd) != 0)
+        return 0;
+    return cmd.type;
 }
 
 bool set_dynamic_manager(unsigned int size, const char *hash)
