@@ -154,6 +154,8 @@
     <string name="settings_check_update">Update notifications</string>
     <string name="settings_check_update_summary">Auto-check for module and manager updates</string>
     <string name="grant_root_failed">Failed to grant root!</string>
+    <string name="home_pr_build_warning">This is a PR debug build. Do NOT use it in production!</string>
+    <string name="home_pr_kernel_warning">The kernel was built with PR signature support. This is not a production kernel!</string>
     <string name="action">Action</string>
     <string name="close">Close</string>
     <string name="direct_install">Direct install (Recommended)</string>
@@ -193,6 +195,12 @@
     <string name="restore_allowlist">Restore Allowlist</string>
     <string name="settings_custom_background">Custom App Background</string>
     <string name="settings_custom_background_summary">Select an image as background</string>
+    <string name="settings_config_enable_blur">Enable Blur</string>
+    <string name="settings_config_enable_blur_summary">Enable blur process for this app</string>
+    <string name="settings_config_use_custom_background_seed_color">Pick color from custom background</string>
+    <string name="settings_config_use_custom_background_seed_color_summary">Extract dynamic color seed color from custom background</string>
+    <string name="settings_custom_enable_high_contrast">High Contrast Mode</string>
+    <string name="settings_custom_enable_high_contrast_summary">Render shadow around with text</string>
     <string name="settings_card_alpha">Card transparency</string>
     <string name="home_android_version">Android version</string>
     <string name="home_device_model">Device model</string>
